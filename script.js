@@ -1,8 +1,10 @@
-const GITHUB_USER = "go-lissandro";
+// Repositório deste site (fica de fora da lista de projetos)
+const SITE_REPO = "go-lissandro.github.io";
 
-// Minhas contas pessoais no GitHub (dados em data.js)
-const ACCOUNTS = window.ACCOUNTS || [{ login: GITHUB_USER, label: "Conta principal", about: "" }];
-const ownerOf = (r) => r.owner?.login ?? r.owner ?? GITHUB_USER;
+// Minhas contas pessoais no GitHub, em ordem cronológica (dados em data.js)
+const ACCOUNTS = window.ACCOUNTS || [{ login: "lissandrojs", label: "Conta principal", period: "", about: "", main: true }];
+const MAIN_ACCOUNT = (ACCOUNTS.find((a) => a.main) || ACCOUNTS[0]).login;
+const ownerOf = (r) => r.owner?.login ?? r.owner ?? MAIN_ACCOUNT;
 
 // Descrições para repositórios que estão sem descrição no GitHub
 const DESCRICOES = {
@@ -20,7 +22,11 @@ const DESCRICOES = {
   "praticas_fast_api": "Práticas e exemplos com o framework FastAPI.",
 };
 
-const DESTAQUES = ["baseApi", "cade-meu-pix", "nexus_learn", "cade-meu-pix-front", "bank_fast_api", "impressora3d"];
+// Destaques da página inicial: "conta/repositório"
+const DESTAQUES = [
+  "go-lissandro/cade-meu-pix", "go-lissandro/nexus_learn", "lissandrojs/baseApiNestJS",
+  "go-lissandro/baseApi", "lissandrojs/api-rest-envio-wpp", "lissandrojs/teste-tecnico-Bloxs-gestao-de-investimentos",
+];
 
 const CORES = {
   Go: "#00ADD8", Python: "#3572A5", TypeScript: "#3178c6", JavaScript: "#f1e05a",
@@ -34,6 +40,7 @@ const SKILLS = ["Go", "Fiber", "GORM", "Python", "FastAPI", "TypeScript", "JavaS
 let repos = (window.REPOS_SNAPSHOT || []).slice();
 let filtroLang = "Todos";
 let filtroConta = "Todas";
+let ordem = "recentes"; // recentes | cronologica
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -42,7 +49,7 @@ const dataBR = (iso) => new Date(iso).toLocaleDateString("pt-BR", { month: "shor
 
 function cardProjeto(r) {
   const lang = r.language || "Outros";
-  const desc = r.description || (ownerOf(r) === GITHUB_USER && DESCRICOES[r.name]) || "Projeto pessoal.";
+  const desc = r.description || (ownerOf(r) === "go-lissandro" && DESCRICOES[r.name]) || "Projeto pessoal.";
   const demo = r.homepage ? `<a href="${esc(r.homepage)}" target="_blank" rel="noopener">Demo ↗</a>` : "";
   return `
     <article class="card project">
@@ -51,7 +58,7 @@ function cardProjeto(r) {
         <div class="project-links">${demo}<a href="${esc(r.html_url)}" target="_blank" rel="noopener">Código ↗</a></div>
       </div>
       <h3>${esc(nomeBonito(r.name))}</h3>
-      ${ownerOf(r) !== GITHUB_USER ? `<span class="account-tag mono">@${esc(ownerOf(r))}</span>` : ""}
+      <span class="account-tag mono${ownerOf(r) === MAIN_ACCOUNT ? " main" : ""}">@${esc(ownerOf(r))}</span>
       <p>${esc(desc)}</p>
       <div class="project-meta">
         <span class="tag"><span class="lang-dot" style="background:${CORES[lang] || CORES.Outros}"></span>${esc(lang)}</span>
@@ -70,7 +77,7 @@ function contarLinguagens() {
 
 function renderTudo() {
   // Destaques
-  const dest = DESTAQUES.map((n) => repos.find((r) => r.name === n && ownerOf(r) === GITHUB_USER)).filter(Boolean);
+  const dest = DESTAQUES.map((id) => repos.find((r) => `${ownerOf(r)}/${r.name}` === id)).filter(Boolean);
   $("#featured").innerHTML = dest.map(cardProjeto).join("");
 
   // Estatísticas
@@ -122,6 +129,7 @@ function renderProjetos() {
       (filtroConta === "Todas" || ownerOf(r) === filtroConta) &&
       (!q || texto.includes(q));
   });
+  if (ordem === "cronologica") lista.sort((a, b) => a.created_at.localeCompare(b.created_at));
   $("#all-projects").innerHTML = lista.map(cardProjeto).join("");
   $("#empty").hidden = lista.length > 0;
 }
@@ -131,11 +139,12 @@ function renderContas() {
   const html = ACCOUNTS.map((a) => {
     const n = repos.filter((r) => ownerOf(r) === a.login).length;
     return `
-      <a class="card account-card" href="https://github.com/${esc(a.login)}" target="_blank" rel="noopener">
+      <a class="card account-card${a.main ? " main" : ""}" href="https://github.com/${esc(a.login)}" target="_blank" rel="noopener">
         <img src="https://avatars.githubusercontent.com/${esc(a.login)}" alt="" width="56" height="56" loading="lazy">
         <div>
           <h3 class="mono">@${esc(a.login)}</h3>
-          <p class="account-label">${esc(a.label)} · ${n} ${n === 1 ? "projeto" : "projetos"}</p>
+          <p class="account-label">${esc(a.label)} · ${esc(a.period)}</p>
+          <p class="small">${n} ${n === 1 ? "projeto" : "projetos"}</p>
           <p class="muted small">${esc(a.about)}</p>
         </div>
       </a>`;
@@ -149,7 +158,7 @@ async function buscarConta(login) {
   if (!res.ok) throw new Error(res.status);
   const dados = await res.json();
   return dados.filter((r) =>
-    r.owner?.login === login && r.owner?.type === "User" && !r.fork && r.name !== `${GITHUB_USER}.github.io`);
+    r.owner?.login === login && r.owner?.type === "User" && !r.fork && r.name !== SITE_REPO);
 }
 
 async function sincronizar() {
@@ -197,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#year").textContent = new Date().getFullYear();
   $("#skills").innerHTML = SKILLS.map((s) => `<span class="skill">${esc(s)}</span>`).join("");
   $("#search").addEventListener("input", renderProjetos);
+  $("#sort").addEventListener("change", (e) => { ordem = e.target.value; renderProjetos(); });
   $("#filters").addEventListener("click", (e) => {
     const b = e.target.closest(".chip");
     if (!b) return;
