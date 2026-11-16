@@ -69,7 +69,8 @@ main { flex: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 
 /* HERO */
 .hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; min-height: 64vh; }
 .eyebrow { color: var(--accent-2); font-size: .95rem; margin-bottom: 8px; }
-h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+h1, h2.page-h { font-size: clamp(2.2rem, 5.5vw, 3.8rem); line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+.h1-role { display: block; margin-top: 10px; font-size: max(1.15rem, .42em); font-weight: 600; letter-spacing: 0; color: var(--text); }
 .typed { margin: 16px 0; font-size: 1.15rem; color: var(--text); min-height: 1.8em; }
 .caret { color: var(--accent); animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
@@ -96,8 +97,8 @@ h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); line-height: 1.1; font-weight: 800
   position: absolute; padding: 6px 12px; border-radius: 10px; font-size: .85rem;
   background: var(--card); border: 1px solid var(--border); animation: float 4s ease-in-out infinite;
 }
-.b1 { top: 8%; left: -12%; color: #00add8; }
-.b2 { bottom: 14%; left: -18%; color: #ffd43b; animation-delay: 1s; }
+.b1 { top: 8%; left: -12%; color: #6cc24a; }
+.b2 { bottom: 14%; left: -18%; color: #f0506e; animation-delay: 1s; }
 .b3 { top: 40%; right: -18%; color: #3178c6; animation-delay: 2s; }
 @keyframes float { 50% { transform: translateY(-10px); } }
 
@@ -220,3 +221,7 @@ a.contact-card:hover { transform: translateY(-4px); border-color: var(--accent);
   box-shadow: 0 8px 24px rgba(37, 211, 102, .4); transition: transform .2s;
 }
 .wa-float:hover { transform: scale(1.08); }
+
+/* PROJETO EM DESENVOLVIMENTO */
+.project.wip { border-style: dashed; }
+.wip-tag { color: #fbbf24; background: rgba(251, 191, 36, .1); border: 1px solid rgba(251, 191, 36, .3); padding: 2px 10px; border-radius: 999px; font-size: .78rem; }

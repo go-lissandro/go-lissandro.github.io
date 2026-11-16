@@ -28,14 +28,19 @@ const DESTAQUES = [
   "go-lissandro/baseApi", "lissandrojs/api-rest-envio-wpp", "lissandrojs/teste-tecnico-Bloxs-gestao-de-investimentos",
 ];
 
+// Projetos sem repositório público ainda, mostrados no início dos destaques
+const EM_DESENVOLVIMENTO = [
+  { nome: "JobRadar", descricao: "Agregador de vagas com IA local: reúne vagas de várias fontes e ajuda a filtrar as que combinam com o perfil.", tags: ["TypeScript", "IA local"] },
+];
+
 const CORES = {
   Go: "#00ADD8", Python: "#3572A5", TypeScript: "#3178c6", JavaScript: "#f1e05a",
   Java: "#b07219", HTML: "#e34c26", Shell: "#89e051", PHP: "#4F5D95", CSS: "#563d7c",
   "C++": "#f34b7d", Makefile: "#427819", Outros: "#6e7681",
 };
 
-const SKILLS = ["Go", "Fiber", "GORM", "Python", "FastAPI", "TypeScript", "JavaScript", "React", "Node.js",
-  "Java", "Docker", "Git", "IA / NotebookLM", "Segurança", "Linux"];
+const SKILLS = ["JavaScript", "TypeScript", "Node.js", "NestJS", "Next.js", "React", "Java", "Spring Boot",
+  "Python", "FastAPI", "Go", "Fiber", "GORM", "Docker", "Nginx", "Git", "Linux", "IA / NotebookLM", "Segurança"];
 
 let repos = (window.REPOS_SNAPSHOT || []).slice();
 let filtroLang = "Todos";
@@ -69,6 +74,26 @@ function cardProjeto(r) {
     </article>`;
 }
 
+function cardEmDesenvolvimento(p) {
+  return `
+    <article class="card project wip">
+      <div class="project-top">
+        <span class="folder">🚧</span>
+        <span class="wip-tag mono">em desenvolvimento</span>
+      </div>
+      <h3>${esc(p.nome)}</h3>
+      <p>${esc(p.descricao)}</p>
+      <div class="project-meta">${p.tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    </article>`;
+}
+
+// HTML dos destaques e das tecnologias (também usado por scripts/build.mjs para pré-renderizar o index.html)
+function htmlDestaques() {
+  const dest = DESTAQUES.map((id) => repos.find((r) => `${ownerOf(r)}/${r.name}` === id)).filter(Boolean);
+  return EM_DESENVOLVIMENTO.map(cardEmDesenvolvimento).join("") + dest.map(cardProjeto).join("");
+}
+const htmlSkills = () => SKILLS.map((s) => `<span class="skill">${esc(s)}</span>`).join("");
+
 function contarLinguagens() {
   const c = {};
   repos.forEach((r) => { const l = r.language || "Outros"; c[l] = (c[l] || 0) + 1; });
@@ -77,8 +102,7 @@ function contarLinguagens() {
 
 function renderTudo() {
   // Destaques
-  const dest = DESTAQUES.map((id) => repos.find((r) => `${ownerOf(r)}/${r.name}` === id)).filter(Boolean);
-  $("#featured").innerHTML = dest.map(cardProjeto).join("");
+  $("#featured").innerHTML = htmlDestaques();
 
   // Estatísticas
   const langs = contarLinguagens().filter(([l]) => l !== "Outros");
@@ -140,7 +164,7 @@ function renderContas() {
     const n = repos.filter((r) => ownerOf(r) === a.login).length;
     return `
       <a class="card account-card${a.main ? " main" : ""}" href="https://github.com/${esc(a.login)}" target="_blank" rel="noopener">
-        <img src="https://avatars.githubusercontent.com/${esc(a.login)}" alt="" width="56" height="56" loading="lazy">
+        <img src="https://avatars.githubusercontent.com/${esc(a.login)}" alt="Avatar da conta @${esc(a.login)} no GitHub" width="56" height="56" loading="lazy">
         <div>
           <h3 class="mono">@${esc(a.login)}</h3>
           <p class="account-label">${esc(a.label)} · ${esc(a.period)}</p>
@@ -193,7 +217,7 @@ function rota() {
 
 // Efeito de digitação
 function digitar() {
-  const frases = ["Desenvolvedor Backend em Go", "APIs com Python e FastAPI", "Frontends em TypeScript", "Estudante de segurança e blockchain"];
+  const frases = ["APIs com Node.js e NestJS", "Frontends com Next.js e React", "Backends em Go e Python", "Estudando Java e Spring Boot", "Estudante de segurança e blockchain"];
   let i = 0, j = 0, apagando = false;
   const el = $("#typed");
   (function tick() {
@@ -209,7 +233,7 @@ function digitar() {
 
 document.addEventListener("DOMContentLoaded", () => {
   $("#year").textContent = new Date().getFullYear();
-  $("#skills").innerHTML = SKILLS.map((s) => `<span class="skill">${esc(s)}</span>`).join("");
+  $("#skills").innerHTML = htmlSkills();
   $("#search").addEventListener("input", renderProjetos);
   $("#sort").addEventListener("change", (e) => { ordem = e.target.value; renderProjetos(); });
   $("#filters").addEventListener("click", (e) => {
