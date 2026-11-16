@@ -30,7 +30,7 @@ const DESTAQUES = [
 
 // Projetos sem repositório público ainda, mostrados no início dos destaques
 const EM_DESENVOLVIMENTO = [
-  { nome: "JobRadar", descricao: "Agregador de vagas com IA local: reúne vagas de várias fontes e ajuda a filtrar as que combinam com o perfil.", tags: ["TypeScript", "IA local"] },
+  { nome: "JobRadar", descricao: "Agregador de vagas com IA local: reúne vagas de diferentes fontes em um só lugar.", tags: ["IA local", "Agregador de vagas"] },
 ];
 
 const CORES = {
