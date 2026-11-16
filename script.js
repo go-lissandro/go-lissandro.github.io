@@ -175,10 +175,15 @@ async function sincronizar() {
   status.textContent = okTodas ? "· sincronizado com o GitHub" : "";
 }
 
+// Título da aba em cada página interna, no padrão "<Página> — Lissandro Rocha"
+const TITULO_HOME = "Lissandro Rocha — Desenvolvedor Full Stack (Node.js, NestJS, Next.js)";
+const TITULOS = { sobre: "Sobre", projetos: "Projetos", contato: "Contato" };
+
 // Roteamento por hash
 function rota() {
   const id = (location.hash || "#inicio").slice(1);
   const alvo = document.getElementById(id) && document.getElementById(id).classList.contains("page") ? id : "inicio";
+  document.title = TITULOS[alvo] ? `${TITULOS[alvo]} — Lissandro Rocha` : TITULO_HOME;
   document.querySelectorAll(".page").forEach((p) => (p.hidden = p.id !== alvo));
   document.querySelectorAll(".nav-links a").forEach((a) => a.classList.toggle("active", a.dataset.route === alvo));
   $(".nav-links").classList.remove("open");
