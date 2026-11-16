@@ -211,3 +211,12 @@ a.contact-card:hover { transform: translateY(-4px); border-color: var(--accent);
 .account-card.main { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 .account-tag.main { color: #c4b5fd; background: rgba(124, 92, 255, .12); border-color: rgba(124, 92, 255, .35); }
 .chip .muted { font-size: .8em; margin-left: 4px; }
+
+/* WHATSAPP */
+.icon-wa { background: #25d366; }
+.wa-float {
+  position: fixed; right: 20px; bottom: 20px; z-index: 20; width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center; background: #25d366; color: #fff;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, .4); transition: transform .2s;
+}
+.wa-float:hover { transform: scale(1.08); }
