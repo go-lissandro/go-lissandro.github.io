@@ -78,9 +78,12 @@
         <div class="about-text">
           <p>Sou desenvolvedor e uso esta conta do GitHub principalmente para projetos em <strong>Golang</strong>, mas meu dia a dia passa por várias stacks. Construo APIs com Go, Fiber, GORM e Docker, desenvolvo backends e automações em Python com FastAPI e crio frontends em TypeScript e JavaScript.</p>
           <p>Tenho interesse em <strong>segurança da informação</strong> (simulação de malware para fins educacionais), <strong>criptomoedas</strong> (estudos sobre Monero) e <strong>inteligência artificial</strong>. Gosto de aprender fazendo: cada estudo vira um repositório.</p>
-          <p class="muted">Também mantenho outros projetos nas contas <a href="https://github.com/lissandrojs" target="_blank" rel="noopener">lissandrojs</a> e <a href="https://github.com/lissandro7" target="_blank" rel="noopener">lissandro7</a>.</p>
+          <p class="muted">Meus projetos estão divididos em três contas do GitHub: <a href="https://github.com/go-lissandro" target="_blank" rel="noopener">go-lissandro</a> (a principal), <a href="https://github.com/lissandrojs" target="_blank" rel="noopener">lissandrojs</a> e <a href="https://github.com/lissandro7" target="_blank" rel="noopener">lissandro7</a>. Todos aparecem na página de projetos.</p>
         </div>
       </div>
+
+      <h2 class="sub">Minhas contas no GitHub</h2>
+      <div class="accounts-grid"></div>
 
       <h2 class="sub">Tecnologias</h2>
       <div class="skills" id="skills"></div>
@@ -97,12 +100,13 @@
       <div class="page-title">
         <p class="eyebrow mono">// projetos</p>
         <h1>Meus <span class="grad">projetos</span></h1>
-        <p class="muted">Repositórios pessoais do GitHub, sem projetos de organizações. <span id="sync-status" class="mono small"></span></p>
+        <p class="muted">Repositórios públicos das minhas três contas no GitHub, sem projetos de organizações. <span id="sync-status" class="mono small"></span></p>
       </div>
       <div class="toolbar">
         <input type="search" id="search" placeholder="Buscar projeto…" aria-label="Buscar projeto">
-        <div class="filters" id="filters"></div>
+        <div class="filters" id="filters" aria-label="Filtrar por linguagem"></div>
       </div>
+      <div class="filters account-filters" id="account-filters" aria-label="Filtrar por conta"></div>
       <div class="grid" id="all-projects"></div>
       <p class="empty muted" id="empty" hidden>Nenhum projeto encontrado.</p>
     </section>
@@ -125,6 +129,9 @@
           <span class="icon">📍</span><div><h3>Localização</h3><p class="muted">Belo Horizonte, MG, Brasil</p></div>
         </div>
       </div>
+
+      <h2 class="sub">Contas no GitHub</h2>
+      <div class="accounts-grid"></div>
     </section>
   </main>
 

@@ -1,5 +1,9 @@
 const GITHUB_USER = "go-lissandro";
 
+// Minhas contas pessoais no GitHub (dados em data.js)
+const ACCOUNTS = window.ACCOUNTS || [{ login: GITHUB_USER, label: "Conta principal", about: "" }];
+const ownerOf = (r) => r.owner?.login ?? r.owner ?? GITHUB_USER;
+
 // Descrições para repositórios que estão sem descrição no GitHub
 const DESCRICOES = {
   "impressora3d": "Análise de mercado, planilha de preços e anúncios para um negócio de impressão 3D.",
@@ -20,7 +24,8 @@ const DESTAQUES = ["baseApi", "cade-meu-pix", "nexus_learn", "cade-meu-pix-front
 
 const CORES = {
   Go: "#00ADD8", Python: "#3572A5", TypeScript: "#3178c6", JavaScript: "#f1e05a",
-  Java: "#b07219", HTML: "#e34c26", Shell: "#89e051", Outros: "#6e7681",
+  Java: "#b07219", HTML: "#e34c26", Shell: "#89e051", PHP: "#4F5D95", CSS: "#563d7c",
+  "C++": "#f34b7d", Makefile: "#427819", Outros: "#6e7681",
 };
 
 const SKILLS = ["Go", "Fiber", "GORM", "Python", "FastAPI", "TypeScript", "JavaScript", "React", "Node.js",
@@ -28,6 +33,7 @@ const SKILLS = ["Go", "Fiber", "GORM", "Python", "FastAPI", "TypeScript", "JavaS
 
 let repos = (window.REPOS_SNAPSHOT || []).slice();
 let filtroLang = "Todos";
+let filtroConta = "Todas";
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -36,7 +42,7 @@ const dataBR = (iso) => new Date(iso).toLocaleDateString("pt-BR", { month: "shor
 
 function cardProjeto(r) {
   const lang = r.language || "Outros";
-  const desc = r.description || DESCRICOES[r.name] || "Projeto pessoal.";
+  const desc = r.description || (ownerOf(r) === GITHUB_USER && DESCRICOES[r.name]) || "Projeto pessoal.";
   const demo = r.homepage ? `<a href="${esc(r.homepage)}" target="_blank" rel="noopener">Demo ↗</a>` : "";
   return `
     <article class="card project">
@@ -45,6 +51,7 @@ function cardProjeto(r) {
         <div class="project-links">${demo}<a href="${esc(r.html_url)}" target="_blank" rel="noopener">Código ↗</a></div>
       </div>
       <h3>${esc(nomeBonito(r.name))}</h3>
+      ${ownerOf(r) !== GITHUB_USER ? `<span class="account-tag mono">@${esc(ownerOf(r))}</span>` : ""}
       <p>${esc(desc)}</p>
       <div class="project-meta">
         <span class="tag"><span class="lang-dot" style="background:${CORES[lang] || CORES.Outros}"></span>${esc(lang)}</span>
@@ -63,21 +70,27 @@ function contarLinguagens() {
 
 function renderTudo() {
   // Destaques
-  const dest = DESTAQUES.map((n) => repos.find((r) => r.name === n)).filter(Boolean);
+  const dest = DESTAQUES.map((n) => repos.find((r) => r.name === n && ownerOf(r) === GITHUB_USER)).filter(Boolean);
   $("#featured").innerHTML = dest.map(cardProjeto).join("");
 
   // Estatísticas
   const langs = contarLinguagens().filter(([l]) => l !== "Outros");
   const desde = repos.reduce((m, r) => (r.created_at < m ? r.created_at : m), new Date().toISOString());
   $("#stats").innerHTML = `
-    <li><strong>${repos.length}</strong><span>projetos pessoais</span></li>
+    <li><strong>${repos.length}</strong><span>projetos em ${ACCOUNTS.length} contas</span></li>
     <li><strong>${langs.length}</strong><span>linguagens</span></li>
     <li><strong>${new Date(desde).getFullYear()}</strong><span>no GitHub desde</span></li>`;
 
   // Filtros
   const opcoes = ["Todos", ...contarLinguagens().map(([l]) => l)];
   $("#filters").innerHTML = opcoes.map((l) => `<button class="chip ${l === filtroLang ? "active" : ""}" data-lang="${esc(l)}">${esc(l)}</button>`).join("");
+  const contas = ["Todas", ...ACCOUNTS.map((a) => a.login)];
+  $("#account-filters").innerHTML = contas.map((c) => {
+    const n = c === "Todas" ? repos.length : repos.filter((r) => ownerOf(r) === c).length;
+    return `<button class="chip ${c === filtroConta ? "active" : ""}" data-conta="${esc(c)}">${c === "Todas" ? "Todas as contas" : "@" + esc(c)} <span class="muted">${n}</span></button>`;
+  }).join("");
   renderProjetos();
+  renderContas();
 
   // Barra de linguagens
   const total = repos.length || 1;
@@ -85,11 +98,11 @@ function renderTudo() {
   $("#lang-bar").innerHTML = lc.map(([l, n]) => `<span title="${esc(l)}" style="flex:${n};background:${CORES[l] || CORES.Outros}"></span>`).join("");
   $("#lang-legend").innerHTML = lc.map(([l, n]) => `<li><span class="lang-dot" style="background:${CORES[l] || CORES.Outros}"></span>${esc(l)} <span class="muted">${Math.round((n / total) * 100)}%</span></li>`).join("");
 
-  // Linha do tempo: projetos mais antigos -> mais recentes, agrupados por mês
+  // Linha do tempo: projetos agrupados pelo ano em que foram criados
   const porData = repos.slice().sort((a, b) => a.created_at.localeCompare(b.created_at));
   const grupos = new Map();
   porData.forEach((r) => {
-    const k = dataBR(r.created_at);
+    const k = r.created_at.slice(0, 4);
     if (!grupos.has(k)) grupos.set(k, []);
     grupos.get(k).push(r);
   });
@@ -105,28 +118,52 @@ function renderProjetos() {
   const lista = repos.filter((r) => {
     const lang = r.language || "Outros";
     const texto = `${r.name} ${r.description || ""} ${DESCRICOES[r.name] || ""} ${lang}`.toLowerCase();
-    return (filtroLang === "Todos" || lang === filtroLang) && (!q || texto.includes(q));
+    return (filtroLang === "Todos" || lang === filtroLang) &&
+      (filtroConta === "Todas" || ownerOf(r) === filtroConta) &&
+      (!q || texto.includes(q));
   });
   $("#all-projects").innerHTML = lista.map(cardProjeto).join("");
   $("#empty").hidden = lista.length > 0;
 }
 
+// Cards das contas (página Sobre e Contato)
+function renderContas() {
+  const html = ACCOUNTS.map((a) => {
+    const n = repos.filter((r) => ownerOf(r) === a.login).length;
+    return `
+      <a class="card account-card" href="https://github.com/${esc(a.login)}" target="_blank" rel="noopener">
+        <img src="https://avatars.githubusercontent.com/${esc(a.login)}" alt="" width="56" height="56" loading="lazy">
+        <div>
+          <h3 class="mono">@${esc(a.login)}</h3>
+          <p class="account-label">${esc(a.label)} · ${n} ${n === 1 ? "projeto" : "projetos"}</p>
+          <p class="muted small">${esc(a.about)}</p>
+        </div>
+      </a>`;
+  }).join("");
+  document.querySelectorAll(".accounts-grid").forEach((el) => (el.innerHTML = html));
+}
+
 // Atualiza com dados ao vivo da API do GitHub: só repositórios do próprio usuário, sem forks
+async function buscarConta(login) {
+  const res = await fetch(`https://api.github.com/users/${login}/repos?type=owner&sort=pushed&per_page=100`);
+  if (!res.ok) throw new Error(res.status);
+  const dados = await res.json();
+  return dados.filter((r) =>
+    r.owner?.login === login && r.owner?.type === "User" && !r.fork && r.name !== `${GITHUB_USER}.github.io`);
+}
+
 async function sincronizar() {
   const status = $("#sync-status");
-  try {
-    const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?type=owner&sort=pushed&per_page=100`);
-    if (!res.ok) throw new Error(res.status);
-    const dados = await res.json();
-    const proprios = dados.filter((r) => r.owner?.login === GITHUB_USER && r.owner?.type === "User" && !r.fork && r.name !== `${GITHUB_USER}.github.io`);
-    if (proprios.length) {
-      repos = proprios;
-      renderTudo();
-      status.textContent = "· sincronizado com o GitHub";
-    }
-  } catch {
-    status.textContent = "";
+  const resultados = await Promise.allSettled(ACCOUNTS.map((a) => buscarConta(a.login)));
+  // conta que falhar (ex.: limite da API) mantém os dados do snapshot
+  const novos = ACCOUNTS.flatMap((a, i) =>
+    resultados[i].status === "fulfilled" ? resultados[i].value : repos.filter((r) => ownerOf(r) === a.login));
+  const okTodas = resultados.every((r) => r.status === "fulfilled");
+  if (resultados.some((r) => r.status === "fulfilled")) {
+    repos = novos.sort((a, b) => b.pushed_at.localeCompare(a.pushed_at));
+    renderTudo();
   }
+  status.textContent = okTodas ? "· sincronizado com o GitHub" : "";
 }
 
 // Roteamento por hash
@@ -164,7 +201,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const b = e.target.closest(".chip");
     if (!b) return;
     filtroLang = b.dataset.lang;
-    document.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === b));
+    $("#filters").querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === b));
+    renderProjetos();
+  });
+  $("#account-filters").addEventListener("click", (e) => {
+    const b = e.target.closest(".chip");
+    if (!b) return;
+    filtroConta = b.dataset.conta;
+    $("#account-filters").querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c === b));
     renderProjetos();
   });
   $(".menu-btn").addEventListener("click", () => {
