@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+# Arquivos-fonte do repositório (rascunhos, documentação e scripts) não devem ser indexados
+Disallow: /content/
+Disallow: /docs/
+Disallow: /scripts/
+Sitemap: https://go-lissandro.github.io/sitemap.xml
