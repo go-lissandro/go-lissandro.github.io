@@ -1,0 +1,15 @@
+{
+  "name": "go-lissandro.github.io",
+  "private": true,
+  "description": "Portfólio de Lissandro Rocha. Site estático; o build gera arquivos na própria raiz, que é publicada pelo GitHub Pages.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "og": "node scripts/gerar-og.mjs",
+    "serve": "npx --yes http-server -p 8080 -c-1 ."
+  },
+  "devDependencies": {
+    "marked": "^15.0.12",
+    "sharp": "^0.34.5"
+  }
+}

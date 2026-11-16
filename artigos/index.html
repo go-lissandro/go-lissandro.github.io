@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Artigos — Lissandro Rocha</title>
+  <meta name="description" content="Artigos técnicos de Lissandro Rocha, desenvolvedor full stack: Node.js, NestJS, Next.js, Java, IA local e infraestrutura.">
+  <link rel="canonical" href="https://go-lissandro.github.io/artigos/">
+  <meta name="author" content="Lissandro Rocha">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b0d14">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lissandro Rocha">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:url" content="https://go-lissandro.github.io/artigos/">
+  <meta property="og:title" content="Artigos — Lissandro Rocha">
+  <meta property="og:description" content="Artigos técnicos de Lissandro Rocha, desenvolvedor full stack: Node.js, NestJS, Next.js, Java, IA local e infraestrutura.">
+  <meta property="og:image" content="https://go-lissandro.github.io/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Artigos — Lissandro Rocha">
+  <meta name="twitter:description" content="Artigos técnicos de Lissandro Rocha, desenvolvedor full stack: Node.js, NestJS, Next.js, Java, IA local e infraestrutura.">
+  <meta name="twitter:image" content="https://go-lissandro.github.io/og-image.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a href="/" class="brand"><span class="brand-mark">&lt;/&gt;</span> lissandro<span class="accent">.dev</span></a>
+    <button class="menu-btn" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav-links">
+      <a href="/#inicio">Início</a>
+      <a href="/#sobre">Sobre</a>
+      <a href="/#projetos">Projetos</a>
+      <a href="/artigos/" class="active">Artigos</a>
+      <a href="/#contato">Contato</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page">
+      <div class="page-title">
+        <p class="eyebrow mono">// artigos</p>
+        <h1>Artigos <span class="grad">técnicos</span></h1>
+        <p class="muted">O que estou construindo e aprendendo no desenvolvimento full stack.</p>
+      </div>
+      <p class="card post-empty muted">Nenhum artigo publicado ainda. Em breve, textos sobre Node.js, NestJS, Next.js, Java e infraestrutura.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Lissandro Miranda Rocha · <a href="https://github.com/go-lissandro" rel="me noopener">GitHub</a> · <a href="https://www.linkedin.com/in/lissandro-miranda-rocha" rel="me noopener">LinkedIn</a></p>
+  </footer>
+
+  <script>
+    document.querySelector(".menu-btn").addEventListener("click", () => {
+      const aberto = document.querySelector(".nav-links").classList.toggle("open");
+      document.querySelector(".menu-btn").setAttribute("aria-expanded", String(aberto));
+    });
+  </script>
+</body>
+</html>
